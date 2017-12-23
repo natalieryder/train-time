@@ -20,17 +20,17 @@
 
  <div class="container">
 
-    <div class="card">
+    <div class="card mt-4">
       <div class="card-header">
         Trains!
       </div>
       <div class="card-body">
-        <table class="table" id="table">
+        <table class="table table-striped" id="table">
           <thead>
             <tr>
               <th scope="col">Train Name</th>
               <th scope="col">Destination</th>
-              <th scope="col">Frequency</th>
+              <th scope="col">Frequency (min)</th>
               <th scope="col">Next Arrival</th>
               <th scope="col">Minutes Away</th>
             </tr>
@@ -43,20 +43,27 @@
       </div>
     </div>
 
-    <form id="train-data" class="mt-4">
-     <div class="form-group">
-       <label for="trainName" class="mt-4">Train Name</label>
-       <input type="text" class="form-control" id="trainName" aria-describedby="emailHelp" placeholder="Train Name">
-       <label for="destination" class="mt-4">Destination</label>
-       <input type="text" class="form-control" id="destination" aria-describedby="emailHelp" placeholder="Destination">
-       <label for="firstTrainTime" class="mt-4">First Train Time</label>
-       <input type="time" class="form-control" id="firstTrainTime" aria-describedby="emailHelp" placeholder="First train time">
-       <label for="trainName" class="mt-4">Frequency</label>
-       <input type="number" class="form-control" id="frequency" aria-describedby="emailHelp" placeholder="frequency">
-       <button type="submit" class="btn btn-primary mt-4" id="trainSubmit">Submit</button>
-
-     </div>
-   </form>
+    <div class="card mt-4">
+      <div class="card-header">
+        Add a train
+      </div>
+      <div class="card-body px-3">
+        <form id="train-data">
+         <div class="form-group">
+           <label for="trainName" class="mt-4">Train Name</label>
+           <input type="text" class="form-control" id="trainName" placeholder="Train Name">
+           <label for="destination" class="mt-4">Destination</label>
+           <input type="text" class="form-control" id="destination" placeholder="Destination">
+           <label for="firstTrainTime" class="mt-4">First Train Time</label>
+           <input type="time" required class="form-control" id="firstTrainTime" placeholder="First train time">
+           <label for="trainName" class="mt-4">Frequency</label>
+           <input type="number" required class="form-control" id="frequency" placeholder="frequency">
+           <button type="submit" class="btn btn-primary mt-4" id="trainSubmit">Submit</button>
+        
+         </div>
+           </form>
+      </div>
+    </div>
  </div>
     <script src="./assets/js/jquery-3.2.1.min.js"></script>
       <script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
