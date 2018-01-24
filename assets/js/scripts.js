@@ -17,6 +17,7 @@ var trainsSnapshot = {};
 //update the trains variable when it is changed
 database.ref("trains").on("value", function(snapshot) {
 	trainsSnapshot = snapshot.val();
+
 });
 
 // on submit button click
@@ -37,8 +38,19 @@ $("#trainSubmit").on("click", function() {
 		$("input").val("");
 })
 
-function addTrain(train) {
+function addTrain(train, key) {
 	// the difference betwenn first train and now
+	
+	var row = $("<tr>").attr("id",key);
+	
+	$(row).appendTo("tbody");
+
+	editTrain(train,key);
+
+}
+
+function editTrain(train, key) {
+
 	var diff = moment().diff(moment(train.firstTrainTime, 'HH:mm'),'minutes');
 	var nextTrain;
 	var minutesUntil;
@@ -59,16 +71,12 @@ function addTrain(train) {
 
 	}
  
-
-
-	// console.log(diff);
-	// console.log(mod);
-	// console.log(nextTrain);
-	
 	var trainTime = moment(train.ftt, 'HH:mm')._i; 
-	// console.log(trainTime);
-	// console.log(moment().add(trainTime));
-	var row = $("<tr>");
+	var row = $("#" + key);
+	// make it empty
+	$(row).empty();
+	// add the cells
+
 	var cell = $("<td>");
 	var name = $(cell).clone().html(train.name);
 	var destination = $(cell).clone().html(train.destination);
@@ -76,20 +84,63 @@ function addTrain(train) {
 	var ftt = $(cell).clone().html(train.ftt);
 	var nextTrainCell = $(cell).clone().html(nextTrain);
 	var	minutesAway = $(cell).clone().html(minutesUntil);
+	var editButton = $("<button>").attr("data-key",key).attr("id",key).text("edit").addClass("edit");
+	var edit =  $(cell).clone().append(editButton);
 
-	$(row).append(name).append(destination).append(frequency).append(nextTrainCell).append(minutesAway).appendTo("tbody");
+	$(row).append(name).append(destination).append(frequency).append(nextTrainCell).append(minutesAway).append(edit);
+
 
 }
+function updateCells() {
+
+}
+
+$(document).on("click", ".edit", function() {
+	var key = $(this).data("key");
+	var row = $(this).parents("tr");
+	console.log(row);
+	$(row[0].children[0]).html("<input type='text' class='form-control' id='editTrainName' placeholder='Train Name' value='" + trainsSnapshot[key].name + "'>");
+	$(row[0].children[1]).html("<input type='text' class='form-control' id='editTrainDestination' placeholder='Train Name' value='" + trainsSnapshot[key].destination + "'>");
+	$(row[0].children[3]).html("<input type='time' class='form-control' id='editTrainStart' placeholder='Train Name' value='" + trainsSnapshot[key].firstTrainTime + "'>");
+	$(row[0].children[5]).html("<button class='update' data-key='" + key +"'> update </button>");
+	editTrain(key);
+});
+
+$(document).on("click", ".update", function() {
+	var key = $(this).data("key");
+	var newName = $("#editTrainName").val();
+	var newDestination = $("#editTrainDestination").val();
+	var newStart = $("#editTrainStart").val();
+
+	console.log(newName +  newDestination + newStart);
+
+	database.ref("trains").child(key).update({
+		name: newName,
+		destination: newDestination,
+		firstTrainTime: newStart,
+	})
+
+
+});
+
+
 $(document).ready(function() {
 	database.ref("trains").on("child_added", function(childSnapshot) {
-		addTrain(childSnapshot.val());
+		addTrain(childSnapshot.val(),childSnapshot.key);
 	});
+
+	database.ref("trains").on("child_changed", function(childSnapshot) {
+		editTrain(childSnapshot.val(),childSnapshot.key);
+
+	});
+
+	
 
 	//re-add all the trains relative to the current time
 	var update = setInterval(function() {
 		$("tbody").empty();
 		$.each(trainsSnapshot, function(key,value) {
-			addTrain(value);
+			addTrain(value,key);
 		})
 	}, 60000);
 });
